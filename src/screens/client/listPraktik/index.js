@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import CardLoading from "../../../components/cardLoading";
-
+import EmptyImage from "../../../assets/empty_img.svg";
 import swal from "sweetalert";
 
 const ListPraktik = (props) => {
@@ -53,10 +53,10 @@ const ListPraktik = (props) => {
 		}
 
 		let userId = current && current.users_id !== undefined ? current.users_id : "";
-		// let antrian =
-		// 	current && current.status_antrian !== undefined ? current.status_antrian : "";
+		let antrian =
+			current && current.status_antrian !== undefined ? current.status_antrian : "";
 
-		if (userId !== profile.id) {
+		if (userId === profile.id && antrian === "selesai") {
 			AntrianAPI.create(payload)
 				.then((res) => {
 					setIsModalVisible(false);
@@ -130,7 +130,7 @@ const ListPraktik = (props) => {
 
 	return (
 		<div>
-			<Header name={puskesmas ? puskesmas[0].nama_puskesmas : null} />
+			<Header name={puskesmas  && puskesmas[0] !== undefined ? puskesmas[0].nama_puskesmas : null} />
 
 			<div
 				style={{
@@ -143,12 +143,12 @@ const ListPraktik = (props) => {
 				}}
 			>
 				<div style={{ fontSize: "16px", fontWeight: "bold" }}>
-					Selamat datang di {puskesmas ? puskesmas[0].nama_puskesmas : null}
+					Selamat datang di {puskesmas  && puskesmas[0] !== undefined? puskesmas[0].nama_puskesmas : null}
 				</div>
 			</div>
 
 			<div style={{ padding: "12px" }}>
-				<div style={{ fontSize: "16px" }}>List Praktik :</div>
+				<div style={{ fontSize: "16px" }}>{dataSource ? "List Praktik :" : null}</div>
 			</div>
 
 			<div style={{ height: "74vh", overflow: "auto", padding: "12px" }}>
@@ -174,7 +174,7 @@ const ListPraktik = (props) => {
 													justifyContent: "space-between",
 												}}
 											>
-												<div style={{ fontSize: "18px", fontWeight: "bold" }}>
+												<div style={{ fontSize: "14px", fontWeight: "bold" }}>
 													{item.nama_praktik}
 												</div>
 												<Button
@@ -212,7 +212,10 @@ const ListPraktik = (props) => {
 								</>
 							);
 						})
-					) : null
+					) : <div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center'}}>
+						<img src={EmptyImage} style={{width:'150px',height:'150px'}} />
+						<div style={{paddingTop:'12px',fontSize:"14px"}}>Tidak ada praktik hari ini</div>
+					</div>
 				) : (
 					<>
 						<CardLoading />

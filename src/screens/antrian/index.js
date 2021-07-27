@@ -10,9 +10,11 @@ import * as yup from "yup";
 import swal from "sweetalert";
 import moment from "moment";
 import ModalExport from "./modalExport";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const ListAntrian = (props) => {
 	const [isModalVisible, setIsModalVisible] = React.useState(false);
+	const [isLoading,setIsLoading] =React.useState(false);
 	const [isOpenModalExport, setIsOpenModalExport] = React.useState(false);
 	const [dataSource, setDataSource] = React.useState([]);
 	const [detailId, setDetailId] = React.useState(null);
@@ -68,18 +70,25 @@ const ListAntrian = (props) => {
 	};
 
 	const retrieveDataAntrian = () => {
+		setIsLoading(true)
 		AntrianAPI.getList()
 			.then((res) => {
 				setDataSource(res.data.data);
 			})
 			.catch((err) => {
 				console.log("err", err);
+			}).finally((err) => {
+				setIsLoading(false)
 			});
 	};
 
 	React.useEffect(() => {
 		retrieveDataAntrian();
 	}, []);
+	
+	const toggleRefresh = () => {
+		retrieveDataAntrian();
+	}
 
 	const handleCancel = () => {
 		setIsModalVisible(false);
@@ -142,9 +151,20 @@ const ListAntrian = (props) => {
 
 	const customActionsButton = () => {
 		return (
-			<Button htmlType="submit" key="submit" type="primary" onClick={toggleModalExport}>
+			<>
+		<div style={{display:"flex"}}>
+		<div style={{paddingRight:'24px'}}>
+		<Button htmlType="submit" key="submit"  onClick={toggleRefresh}>
+				Muat Ulang Antrian
+		</Button>
+		</div>
+		<div>
+		<Button htmlType="submit" key="submit" type="primary" onClick={toggleModalExport}>
 				Export
 			</Button>
+		</div>
+		</div>	
+			</>
 		);
 	};
 
@@ -159,7 +179,10 @@ const ListAntrian = (props) => {
 			<Container>
 				{" "}
 				<Toolbar title={"Daftar Antrian"} customActions={customActionsButton} />
-				<Table columns={columns} dataSource={dataSource} />
+				{isLoading ? <div style={{display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+					<CircularProgress />
+				</div> : <Table columns={columns} dataSource={dataSource} />}
+				
 				{isOpenModalExport && (
 					<ModalExport
 						isOpen={isOpenModalExport}

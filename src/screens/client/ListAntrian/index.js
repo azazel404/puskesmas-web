@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Paper } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import Header from "./header";
-
+import EmptyImage from "../../../assets/empty_img_1.svg";
 import AntrianAPI from "../../../api/AntrianAPI";
 import AuthAPI from "../../../api/AuthAPI";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -27,7 +27,10 @@ const ListAntrian = (props) => {
 						let dataFilter = responseAntrian.data.data.filter(
 							(item) => item.users_id === userdata.id
 						);
-						setCurrentAntrian(dataFilter !== null ? dataFilter[0] : {});
+						let dataFilterUser = dataFilter.filter(item => {
+							return item.status_antrian === "antri" || item.status_antrian === "proses"
+						});
+						setCurrentAntrian(dataFilterUser !== null ? dataFilterUser[0] : {});
 					})
 					.catch((err) => {
 						console.log("err", err);
@@ -69,6 +72,9 @@ const ListAntrian = (props) => {
 		retrieveAntrian();
 	}, []);
 
+
+	
+	
 	return (
 		<div>
 			<Header handleActions={refreshAntrian} />
@@ -82,7 +88,7 @@ const ListAntrian = (props) => {
 					marginTop: "42px",
 				}}
 			>
-				<div
+				{currentAntrian && currentAntrian.status_antrian === "selesai" ? null : <div
 					style={{
 						display: "flex",
 						flexDirection: "column",
@@ -102,26 +108,28 @@ const ListAntrian = (props) => {
 							{currentAntrian && currentAntrian.nomor_antrian}
 						</span>
 					)}
-				</div>
+				</div>  }
+				
 			</div>
 			<div style={{ padding: "12px" }}>
-				<div style={{ fontSize: "16px" }}>Antrian Sekarang :</div>
+				<div style={{ fontSize: "16px" }}>{detailAntrian !== undefined ? "Antrian Sekarang :" : null}</div>
 			</div>
 			<div style={{ height: "74vh", overflow: "auto", padding: "12px" }}>
 				{isLoading ? (
 					<CardLoading />
 				) : (
-					<Paper style={{ marginBottom: "12px", borderRadius: "12px" }}>
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								padding: "12px",
-								borderRadius: "12px",
-								borderLeft: "4px solid #3C76D2",
-							}}
-						>
-							{detailAntrian !== undefined && (
+					<>
+							{detailAntrian !== undefined ? (
+								<Paper style={{ marginBottom: "12px", borderRadius: "12px" }}>
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										padding: "12px",
+										borderRadius: "12px",
+										borderLeft: "4px solid #3C76D2",
+									}}
+								>
 								<div
 									style={{
 										display: "flex",
@@ -160,9 +168,16 @@ const ListAntrian = (props) => {
 										</span>
 									</div>
 								</div>
-							)}
-						</div>
-					</Paper>
+								</div>
+							</Paper>
+							) :<div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center'}}>
+							<img src={EmptyImage} style={{width:'150px',height:'150px'}} />
+							<div style={{paddingTop:'12px',fontSize:"14px"}}>Antrian Tidak Ditemukan</div>
+						</div> }
+					
+					</>
+
+					
 				)}
 			</div>
 		</div>
