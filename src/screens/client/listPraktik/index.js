@@ -52,24 +52,24 @@ const ListPraktik = (props) => {
 			payload.nomor_antrian = 1;
 		}
 
-		let userId = current && current.users_id !== undefined ? current.users_id : "";
-		let antrian =
-			current && current.status_antrian !== undefined ? current.status_antrian : "";
+		// let userId = current && current.users_id !== undefined ? current.users_id : "";
+		// let antrian =
+		// 	current && current.status_antrian !== undefined ? current.status_antrian : "";
+		AntrianAPI.create(payload)
+			.then((res) => {
+				setIsModalVisible(false);
+				swal("Selamat !", "Data sukses di proses", "success");
+				reset({});
+				retrievePraktik();
+			})
+			.catch((err) => {
+				console.log("err", err);
+			});
+		// if (userId === profile.id && antrian === "selesai") {
 
-		if (userId === profile.id && antrian === "selesai") {
-			AntrianAPI.create(payload)
-				.then((res) => {
-					setIsModalVisible(false);
-					swal("Selamat !", "Data sukses di proses", "success");
-					reset({});
-					retrievePraktik();
-				})
-				.catch((err) => {
-					console.log("err", err);
-				});
-		} else {
-			swal("Error !", "Anda sudah ambil antrian sebelumnnya", "error");
-		}
+		// } else {
+		// 	swal("Error !", "Anda sudah ambil antrian sebelumnnya", "error");
+		// }
 	};
 
 	const retrievePraktik = () => {
@@ -130,7 +130,11 @@ const ListPraktik = (props) => {
 
 	return (
 		<div>
-			<Header name={puskesmas  && puskesmas[0] !== undefined ? puskesmas[0].nama_puskesmas : null} />
+			<Header
+				name={
+					puskesmas && puskesmas[0] !== undefined ? puskesmas[0].nama_puskesmas : null
+				}
+			/>
 
 			<div
 				style={{
@@ -143,7 +147,8 @@ const ListPraktik = (props) => {
 				}}
 			>
 				<div style={{ fontSize: "16px", fontWeight: "bold" }}>
-					Selamat datang di {puskesmas  && puskesmas[0] !== undefined? puskesmas[0].nama_puskesmas : null}
+					Selamat datang di{" "}
+					{puskesmas && puskesmas[0] !== undefined ? puskesmas[0].nama_puskesmas : null}
 				</div>
 			</div>
 
@@ -212,10 +217,21 @@ const ListPraktik = (props) => {
 								</>
 							);
 						})
-					) : <div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center'}}>
-						<img src={EmptyImage} style={{width:'150px',height:'150px'}} />
-						<div style={{paddingTop:'12px',fontSize:"14px"}}>Tidak ada praktik hari ini</div>
-					</div>
+					) : (
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						>
+							<img src={EmptyImage} style={{ width: "150px", height: "150px" }} />
+							<div style={{ paddingTop: "12px", fontSize: "14px" }}>
+								Tidak ada praktik hari ini
+							</div>
+						</div>
+					)
 				) : (
 					<>
 						<CardLoading />
