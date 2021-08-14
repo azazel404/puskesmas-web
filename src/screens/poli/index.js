@@ -145,22 +145,28 @@ const ListPolis = (props) => {
 		{
 			title: "Nama Dokter",
 			key: "nama_dokter",
-			render: (text, record) => <span>{record.dokters.nama_dokter}</span>,
+			render: (text, record) => (
+				<span>{record.dokters && record.dokters.nama_dokter}</span>
+			),
 		},
 		{
 			title: "Spesialis Dokter",
 			key: "spesialis",
-			render: (text, record) => <span>{record.dokters.spesialis}</span>,
+			render: (text, record) => <span>{record.dokters && record.dokters.spesialis}</span>,
 		},
 		{
 			title: "Puskesmas",
 			key: "puskesmas",
-			render: (text, record) => <span>{record.puskesmas.nama_puskesmas}</span>,
+			render: (text, record) => (
+				<span>{record.puskesmas && record.puskesmas.nama_puskesmas}</span>
+			),
 		},
 		{
 			title: "Lokasi Puskesmas",
 			key: "lokasi",
-			render: (text, record) => <span>{record.puskesmas.lokasi}</span>,
+			render: (text, record) => (
+				<span>{record.puskesmas && record.puskesmas.lokasi}</span>
+			),
 		},
 		{
 			title: "Action",

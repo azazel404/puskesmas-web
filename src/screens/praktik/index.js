@@ -147,7 +147,7 @@ const ListPraktik = (props) => {
 			title: "Nama Polis",
 			dataIndex: "polis_id",
 			key: "polis_id",
-			render: (text, record) => <span>{record.polis.nama_poli}</span>,
+			render: (text, record) => <span>{record.polis && record.polis.nama_poli}</span>,
 		},
 		{
 			title: "Jam Mulai",
