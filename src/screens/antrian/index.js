@@ -7,15 +7,16 @@ import AntrianAPI from "../../api/AntrianAPI";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import XLSX from "xlsx";
 import swal from "sweetalert";
 import moment from "moment";
-import ModalExport from "./modalExport";
+
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 const ListAntrian = (props) => {
 	const [isModalVisible, setIsModalVisible] = React.useState(false);
-	const [isLoading,setIsLoading] =React.useState(false);
-	const [isOpenModalExport, setIsOpenModalExport] = React.useState(false);
+	const [isLoading, setIsLoading] = React.useState(false);
+	const [dataExport, setDataExport] = React.useState([]);
 	const [dataSource, setDataSource] = React.useState([]);
 	const [detailId, setDetailId] = React.useState(null);
 	const [initialValues, setInitialValues] = React.useState({
@@ -25,10 +26,6 @@ const ListAntrian = (props) => {
 	const { register, handleSubmit, control, errors, reset } = useForm({
 		defaultValues: initialValues,
 	});
-
-	const toggleModalExport = () => {
-		setIsOpenModalExport(!isOpenModalExport);
-	};
 
 	const handleActionSubmit = (values) => {
 		const payload = {
@@ -50,45 +47,59 @@ const ListAntrian = (props) => {
 			});
 	};
 
-	const handleSubmitExport = (values) => {
-		let start = moment(values.startDate).format("YYYY-MM-DD");
-		let end = moment(values.endDate).format("YYYY-MM-DD");
-		AntrianAPI.exportAntrian(start, end)
-			.then((response) => {
-				var reader = new FileReader();
-				reader.readAsDataURL(response.data);
-				reader.onload = function () {
-					window.open(reader.result, "_blank");
-				};
-				reader.onerror = function (error) {
-					console.log("Error: ", error);
-				};
-			})
-			.catch((err) => {
-				swal("Error!", "data laporan transaksi  tidak ditemukan", "error");
-			});
-	};
-
 	const retrieveDataAntrian = () => {
-		setIsLoading(true)
+		setIsLoading(true);
 		AntrianAPI.getList()
 			.then((res) => {
 				setDataSource(res.data.data);
+				let x = res.data.data.map((item) => {
+					console.log("item", item);
+					return {
+						nama: item.users.nama,
+						poli: item.praktiks.nama_praktik,
+						antrian: item.nomor_antrian,
+						tanggal_kunjungan: moment(item.tanggal_kunjungan).format(
+							"dddd MMMM YYYY HH:mm"
+						),
+						status_antrian: item.status_antrian,
+					};
+				});
+				console.log("x", x);
+				setDataExport(x);
 			})
 			.catch((err) => {
 				console.log("err", err);
-			}).finally((err) => {
-				setIsLoading(false)
+			})
+			.finally((err) => {
+				setIsLoading(false);
 			});
 	};
+
+	const handleSubmitExport = () => {
+		const newData = dataExport.map((row) => {
+			delete row.tableData;
+			return row;
+		});
+		const workSheet = XLSX.utils.json_to_sheet(newData);
+		const workBook = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(workBook, workSheet, "antrians");
+		//Buffer
+		let buf = XLSX.write(workBook, { bookType: "xlsx", type: "buffer" });
+		//Binary string
+		XLSX.write(workBook, { bookType: "xlsx", type: "binary" });
+		//Download
+		XLSX.writeFile(workBook, "exportData.xlsx");
+	};
+
+	console.log("data Export", dataExport);
 
 	React.useEffect(() => {
 		retrieveDataAntrian();
 	}, []);
-	
+
 	const toggleRefresh = () => {
 		retrieveDataAntrian();
-	}
+	};
 
 	const handleCancel = () => {
 		setIsModalVisible(false);
@@ -152,18 +163,23 @@ const ListAntrian = (props) => {
 	const customActionsButton = () => {
 		return (
 			<>
-		<div style={{display:"flex"}}>
-		<div style={{paddingRight:'24px'}}>
-		<Button htmlType="submit" key="submit"  onClick={toggleRefresh}>
-				Muat Ulang Antrian
-		</Button>
-		</div>
-		<div>
-		<Button htmlType="submit" key="submit" type="primary" onClick={toggleModalExport}>
-				Export
-			</Button>
-		</div>
-		</div>	
+				<div style={{ display: "flex" }}>
+					<div style={{ paddingRight: "24px" }}>
+						<Button htmlType="submit" key="submit" onClick={toggleRefresh}>
+							Muat Ulang Antrian
+						</Button>
+					</div>
+					<div>
+						<Button
+							htmlType="submit"
+							key="submit"
+							type="primary"
+							onClick={handleSubmitExport}
+						>
+							Export
+						</Button>
+					</div>
+				</div>
 			</>
 		);
 	};
@@ -179,16 +195,19 @@ const ListAntrian = (props) => {
 			<Container>
 				{" "}
 				<Toolbar title={"Daftar Antrian"} customActions={customActionsButton} />
-				{isLoading ? <div style={{display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-					<CircularProgress />
-				</div> : <Table columns={columns} dataSource={dataSource} />}
-				
-				{isOpenModalExport && (
-					<ModalExport
-						isOpen={isOpenModalExport}
-						handleCancel={toggleModalExport}
-						onSubmit={handleSubmitExport}
-					/>
+				{isLoading ? (
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						<CircularProgress />
+					</div>
+				) : (
+					<Table columns={columns} dataSource={dataSource} />
 				)}
 				{isModalVisible && (
 					<Modal

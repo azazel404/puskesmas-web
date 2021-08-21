@@ -32,12 +32,12 @@ const AntrianAPI = {
 		};
 		return _fetch(`/admin/antrian/update/${id}`, request);
 	},
-	exportAntrian: (from, to) => {
+	exportAntrian: () => {
 		const request = {
 			method: "GET",
 			body: {},
 		};
-		return _fetch(`/admin/antrian/export?startDate=${from}&endDate=${to}`, request);
+		return _fetch(`/admin/antrian/export`, request);
 	},
 };
 
