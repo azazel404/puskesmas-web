@@ -135,13 +135,15 @@ const ListAntrian = (props) => {
 			title: "Nama Pasien",
 			dataIndex: "users",
 			key: "users",
-			render: (text, record) => <span>{record.users.nama}</span>,
+			render: (text, record) => <span>{record.users && record.users.nama}</span>,
 		},
 		{
 			title: "Poli",
 			dataIndex: "Poli",
 			key: "Poli",
-			render: (text, record) => <span>{record.praktiks.nama_praktik}</span>,
+			render: (text, record) => (
+				<span>{record.praktiks && record.praktiks.nama_praktik}</span>
+			),
 		},
 		{
 			title: "Antrian",
