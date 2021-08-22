@@ -31,6 +31,15 @@ const PraktikAPI = {
 		};
 		return _fetch(`/admin/praktik/create`, request);
 	},
+
+	updateStatus: (body) => {
+		const request = {
+			method: "POST",
+			body: body,
+		};
+		return _fetch(`/admin/praktik/updateStatus`, request);
+	},
+
 	update: (id, body) => {
 		const request = {
 			method: "PUT",

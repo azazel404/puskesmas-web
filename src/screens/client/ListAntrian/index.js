@@ -27,8 +27,8 @@ const ListAntrian = (props) => {
 						let dataFilter = responseAntrian.data.data.filter(
 							(item) => item.users_id === userdata.id
 						);
-						let dataFilterUser = dataFilter.filter(item => {
-							return item.status_antrian === "antri" || item.status_antrian === "proses"
+						let dataFilterUser = dataFilter.filter((item) => {
+							return item.status_antrian === "antri" || item.status_antrian === "proses";
 						});
 						setCurrentAntrian(dataFilterUser !== null ? dataFilterUser[0] : {});
 					})
@@ -72,9 +72,6 @@ const ListAntrian = (props) => {
 		retrieveAntrian();
 	}, []);
 
-
-	
-	
 	return (
 		<div>
 			<Header handleActions={refreshAntrian} />
@@ -88,39 +85,44 @@ const ListAntrian = (props) => {
 					marginTop: "42px",
 				}}
 			>
-				{currentAntrian && currentAntrian.status_antrian === "selesai" ? null : <div
-					style={{
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "center",
-						alignItems: "center",
-					}}
-				>
-					<span style={{ fontSize: "16px", paddingRight: "12px" }}>
-						Nomor tiket saya:
-					</span>
-					{isLoading ? (
-						<div style={{ paddingTop: "12px" }}>
-							<CircularProgress />
-						</div>
-					) : (
-						<span style={{ fontSize: "32px", paddingRight: "12px", fontWeight: "bold" }}>
-							{currentAntrian && currentAntrian.nomor_antrian}
+				{currentAntrian && currentAntrian.status_antrian === "selesai" ? null : (
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<span style={{ fontSize: "16px", paddingRight: "12px" }}>
+							Nomor tiket saya:
 						</span>
-					)}
-				</div>  }
-				
+						{isLoading ? (
+							<div style={{ paddingTop: "12px" }}>
+								<CircularProgress />
+							</div>
+						) : (
+							<span
+								style={{ fontSize: "32px", paddingRight: "12px", fontWeight: "bold" }}
+							>
+								{currentAntrian && currentAntrian.nomor_antrian}
+							</span>
+						)}
+					</div>
+				)}
 			</div>
 			<div style={{ padding: "12px" }}>
-				<div style={{ fontSize: "16px" }}>{detailAntrian !== undefined ? "Antrian Sekarang :" : null}</div>
+				<div style={{ fontSize: "16px" }}>
+					{detailAntrian !== undefined ? "Antrian Sekarang :" : null}
+				</div>
 			</div>
 			<div style={{ height: "74vh", overflow: "auto", padding: "12px" }}>
 				{isLoading ? (
 					<CardLoading />
 				) : (
 					<>
-							{detailAntrian !== undefined ? (
-								<Paper style={{ marginBottom: "12px", borderRadius: "12px" }}>
+						{detailAntrian !== undefined ? (
+							<Paper style={{ marginBottom: "12px", borderRadius: "12px" }}>
 								<div
 									style={{
 										display: "flex",
@@ -130,54 +132,62 @@ const ListAntrian = (props) => {
 										borderLeft: "4px solid #3C76D2",
 									}}
 								>
-								<div
-									style={{
-										display: "flex",
-										flexDirection: "row",
-										justifyContent: "space-between",
-									}}
-								>
 									<div
 										style={{
 											display: "flex",
-											flexDirection: "column",
-											paddingBottom: "12px",
+											flexDirection: "row",
+											justifyContent: "space-between",
 										}}
 									>
-										<span style={{ fontSize: "16px", paddingRight: "12px" }}>
-											Praktik:
-										</span>
-										<span style={{ fontSize: "14px", paddingRight: "12px" }}>
-											{detailAntrian.praktiks !== undefined &&
-												detailAntrian.praktiks.nama_praktik}
-										</span>
+										<div
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												paddingBottom: "12px",
+											}}
+										>
+											<span style={{ fontSize: "16px", paddingRight: "12px" }}>
+												Praktik:
+											</span>
+											<span style={{ fontSize: "14px", paddingRight: "12px" }}>
+												{detailAntrian.praktiks !== undefined &&
+													detailAntrian.praktiks.nama_praktik}
+											</span>
+										</div>
+										<div
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												paddingBottom: "12px",
+												alignItems: "center",
+											}}
+										>
+											<span style={{ fontSize: "16px", paddingRight: "12px" }}>
+												Antrian:
+											</span>
+											<span style={{ fontSize: "14px", paddingRight: "12px" }}>
+												{detailAntrian && detailAntrian.nomor_antrian}
+											</span>
+										</div>
 									</div>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "column",
-											paddingBottom: "12px",
-											alignItems: "center",
-										}}
-									>
-										<span style={{ fontSize: "16px", paddingRight: "12px" }}>
-											Antrian:
-										</span>
-										<span style={{ fontSize: "14px", paddingRight: "12px" }}>
-											{detailAntrian && detailAntrian.nomor_antrian}
-										</span>
-									</div>
-								</div>
 								</div>
 							</Paper>
-							) :<div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center'}}>
-							<img src={EmptyImage} style={{width:'150px',height:'150px'}} />
-							<div style={{paddingTop:'12px',fontSize:"14px"}}>Antrian Tidak Ditemukan</div>
-						</div> }
-					
+						) : (
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+							>
+								<img src={EmptyImage} style={{ width: "150px", height: "150px" }} />
+								<div style={{ paddingTop: "12px", fontSize: "14px" }}>
+									Antrian Tidak Ditemukan
+								</div>
+							</div>
+						)}
 					</>
-
-					
 				)}
 			</div>
 		</div>

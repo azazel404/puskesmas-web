@@ -43,6 +43,24 @@ const ListPraktik = (props) => {
 		setIsModalVisible(true);
 	};
 
+	const updateStatusPraktik = (record) => {
+		let body = {
+			id: record.id,
+			status: record.status === "aktif" ? "tidakAktif" : "aktif",
+			praktikId: record.id,
+		};
+
+		PraktikAPI.updateStatus(body)
+			.then((res) => {
+				swal("Selamat !", "Data sukses di proses", "success");
+				reset({});
+				retrieveDataPraktik();
+			})
+			.catch((err) => {
+				console.log("err", err);
+			});
+	};
+
 	const handleActionSubmit = (values) => {
 		let nama = dataSourcePolis.filter((item) => item.value === values.polis_id);
 		let dataValue = dataPolis.filter((item) => item.id === values.polis_id);
@@ -189,16 +207,13 @@ const ListPraktik = (props) => {
 			key: "action",
 			render: (text, record) => (
 				<Space size="middle">
-					{/* <a
-					// onClick={() => {
-					// 	setDetailId(record.id);
-					// 	setInitialValues(record);
-					// 	reset(record);
-					// 	setIsModalVisible(true);
-					// }}
+					<a
+						onClick={() => {
+							updateStatusPraktik(record);
+						}}
 					>
-						Ubah Tidak Aktif
-					</a> */}
+						{record.status === "aktif" ? "Tutup Praktik" : "Buka Praktik"}
+					</a>
 					<a
 						onClick={() => {
 							setDetailId(record.id);

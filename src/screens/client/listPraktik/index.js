@@ -52,31 +52,36 @@ const ListPraktik = (props) => {
 			payload.nomor_antrian = 1;
 		}
 
-		// let userId = current && current.users_id !== undefined ? current.users_id : "";
-		// let antrian =
-		// 	current && current.status_antrian !== undefined ? current.status_antrian : "";
-		AntrianAPI.create(payload)
-			.then((res) => {
-				setIsModalVisible(false);
-				swal("Selamat !", "Data sukses di proses", "success");
-				reset({});
-				retrievePraktik();
-			})
-			.catch((err) => {
-				console.log("err", err);
-			});
-		// if (userId === profile.id && antrian === "selesai") {
+		let userId = current && current.users_id !== undefined ? current.users_id : "";
+		let antrian =
+			current && current.status_antrian !== undefined ? current.status_antrian : "";
 
-		// } else {
-		// 	swal("Error !", "Anda sudah ambil antrian sebelumnnya", "error");
-		// }
+		console.log("aaa", antrian);
+
+		if (userId == profile.id && antrian == "antri") {
+			swal("Error !", "Anda sudah ambil antrian sebelumnnya", "error");
+		} else {
+			AntrianAPI.create(payload)
+				.then((res) => {
+					setIsModalVisible(false);
+					swal("Selamat !", "Data sukses di proses", "success");
+					reset({});
+					retrievePraktik();
+					retrieveUser();
+					retrievePuskesmas();
+				})
+				.catch((err) => {
+					console.log("err", err);
+				});
+		}
 	};
 
 	const retrievePraktik = () => {
 		setIsLoading(true);
 		PraktikAPI.getClientPraktik()
 			.then((res) => {
-				setDataSource(res.data.data);
+				let filter = res.data.data.filter((item) => item.status === "aktif");
+				setDataSource(filter);
 			})
 			.catch((err) => {
 				console.log("err", err);
@@ -106,6 +111,7 @@ const ListPraktik = (props) => {
 				setProfile(res.data.data);
 				AntrianAPI.listAntrianUser()
 					.then((res) => {
+						console.log("res", res);
 						setCurrentAntrian(res.data.data);
 					})
 					.catch((err) => {

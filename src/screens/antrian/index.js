@@ -4,6 +4,8 @@ import Container from "../../components/container";
 import Toolbar from "../../components/Toolbar";
 import { Button, Modal, Form, Input, Table, Space } from "antd";
 import AntrianAPI from "../../api/AntrianAPI";
+import PraktikAPI from "../../api/PraktikAPI";
+import { Select } from "antd";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -13,12 +15,16 @@ import moment from "moment";
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 
+const { Option } = Select;
+
 const ListAntrian = (props) => {
 	const [isModalVisible, setIsModalVisible] = React.useState(false);
 	const [isLoading, setIsLoading] = React.useState(false);
 	const [dataExport, setDataExport] = React.useState([]);
 	const [dataSource, setDataSource] = React.useState([]);
+	const [praktikOptions, setPraktikOptions] = React.useState([]);
 	const [detailId, setDetailId] = React.useState(null);
+	const [praktikId, setPraktikId] = React.useState("");
 	const [initialValues, setInitialValues] = React.useState({
 		status_antrian: "",
 	});
@@ -47,19 +53,25 @@ const ListAntrian = (props) => {
 			});
 	};
 
+	const handleChange = (data) => {
+		setPraktikId(data);
+	};
+
 	const retrieveDataAntrian = () => {
 		setIsLoading(true);
-		AntrianAPI.getList()
+		const body = {
+			praktikId: praktikId,
+		};
+		AntrianAPI.getList(body)
 			.then((res) => {
 				setDataSource(res.data.data);
 				let x = res.data.data.map((item) => {
-					console.log("item", item);
 					return {
 						nama: item.users.nama,
 						poli: item.praktiks.nama_praktik,
 						antrian: item.nomor_antrian,
 						tanggal_kunjungan: moment(item.tanggal_kunjungan).format(
-							"dddd MMMM YYYY HH:mm"
+							"dddd, DD-MMMM-YYYY HH:mm"
 						),
 						status_antrian: item.status_antrian,
 					};
@@ -72,6 +84,16 @@ const ListAntrian = (props) => {
 			})
 			.finally((err) => {
 				setIsLoading(false);
+			});
+	};
+
+	const retrievePraktik = () => {
+		PraktikAPI.getList()
+			.then((res) => {
+				setPraktikOptions(res.data.data);
+			})
+			.catch((err) => {
+				console.log("err", err);
 			});
 	};
 
@@ -91,11 +113,13 @@ const ListAntrian = (props) => {
 		XLSX.writeFile(workBook, "exportData.xlsx");
 	};
 
-	console.log("data Export", dataExport);
+	React.useEffect(() => {
+		retrievePraktik();
+	}, []);
 
 	React.useEffect(() => {
 		retrieveDataAntrian();
-	}, []);
+	}, [praktikId]);
 
 	const toggleRefresh = () => {
 		retrieveDataAntrian();
@@ -130,7 +154,7 @@ const ListAntrian = (props) => {
 			dataIndex: "tanggal_kunjungan",
 			key: "tanggal_kunjungan",
 			render: (text, record) => (
-				<span>{moment(record.tanggal_kunjungan).format("dddd MMMM YYYY HH:mm")}</span>
+				<span>{moment(record.tanggal_kunjungan).format("dddd, DD-MMMM-YYYY HH:mm")}</span>
 			),
 		},
 		{
@@ -164,6 +188,17 @@ const ListAntrian = (props) => {
 		return (
 			<>
 				<div style={{ display: "flex" }}>
+					<div style={{ paddingRight: "24px" }}>
+						<Select
+							placeholder="Pilih Poli"
+							style={{ width: 300 }}
+							onChange={handleChange}
+						>
+							{praktikOptions.map((item) => {
+								return <Option value={item.id}>{item.nama_praktik}</Option>;
+							})}
+						</Select>
+					</div>
 					<div style={{ paddingRight: "24px" }}>
 						<Button htmlType="submit" key="submit" onClick={toggleRefresh}>
 							Muat Ulang Antrian

@@ -1,10 +1,10 @@
 import { _fetch } from "../helpers/_fetch";
 
 const AntrianAPI = {
-	getList: () => {
+	getList: (paramBody) => {
 		const request = {
-			method: "GET",
-			body: {},
+			method: "POST",
+			body: paramBody,
 		};
 		return _fetch(`/admin/antrian/list`, request);
 	},
