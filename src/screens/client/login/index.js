@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-
+import swal from "sweetalert";
 import "./style.css";
 import AuthAPI from "../../../api/AuthAPI";
 import { withRouter } from "react-router-dom";
@@ -18,7 +18,7 @@ const Login = (props) => {
 				props.history.push("/praktik");
 			})
 			.catch((err) => {
-				console.log("err", err);
+				swal("Message !", "Email atau password salah", "error");
 			});
 	};
 
